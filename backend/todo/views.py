@@ -7,4 +7,13 @@ from .models import Todo
 
 class TodoView(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
-    queryset = Todo.objects.all()
+   
+
+    def get_queryset(self):
+        queryset = Todo.objects.all()
+
+        search_query = self.request.query_params.get('search', None)
+        if search_query is not None:
+            queryset = queryset.filter(title__icontains=search_query)
+
+        return queryset

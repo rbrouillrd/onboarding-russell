@@ -28,7 +28,6 @@ const App: React.FC = () => {
   });
 
   const [searchValue, setSearchValue] = useState("");
-  const [filteredItems, setFilteredItems] = useState<TodoItem[]>([]);
 
   useEffect(() => {
     refreshList();
@@ -36,12 +35,14 @@ const App: React.FC = () => {
 
   const handleSearch = (e: any) => {
     const value = e.value;
+
     setSearchValue(value);
 
-    const filtered = todoList.filter((item) => {
-      return item.title.toLowerCase().includes(value.toLowerCase());
-    });
-    setFilteredItems(filtered);
+ 
+    axios
+      .get(`http://localhost:8000/api/todos/?search=${value}`)
+      .then((res) => setTodoList(res.data))
+      .catch((err) => console.log(err));
   };
 
   const refreshList = () => {
@@ -119,8 +120,10 @@ const App: React.FC = () => {
   };
 
   const renderItems = () => {
-    const items = searchValue.length > 0 ? filteredItems : todoList;
-    const newItems = items.filter((item) => item.completed === viewCompleted);
+    console.log("renderItems", todoList);
+    const newItems = todoList.filter(
+      (item) => item.completed === viewCompleted
+    );
 
     return newItems.map((item) => (
       <li
@@ -190,16 +193,16 @@ const App: React.FC = () => {
                   </div>
                   <div className="dx-field">
                     <div className="dx-field-value">
-                      <Button text="Clear" onClick={() => setSearchValue("")} />
+                      <Button text="Clear" onClick={() => refreshList()} />
                     </div>
                   </div>
                 </div>
-                <List dataSource={filteredItems} />
+                {/* <List dataSource={filteredItems} /> */}
+                {renderTabList()}
+                <ul className="list-group list-group-flush border-top-0">
+                  {renderItems()}
+                </ul>
               </div>
-              {renderTabList()}
-              <ul className="list-group list-group-flush border-top-0">
-                {renderItems()}
-              </ul>
             </div>
           </div>
         </div>
