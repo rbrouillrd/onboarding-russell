@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Modal from "./components/Modal";
 import axios from "axios";
 import "devextreme/dist/css/dx.light.css";
+import { TextBox } from "devextreme-react/text-box";
+import { Button } from "devextreme-react/button";
+import { List } from "devextreme-react/list";
 
 interface TodoItem {
   id?: number;
@@ -24,9 +27,22 @@ const App: React.FC = () => {
     due_date: "",
   });
 
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredItems, setFilteredItems] = useState<TodoItem[]>([]);
+
   useEffect(() => {
     refreshList();
   }, []);
+
+  const handleSearch = (e: any) => {
+    const value = e.value;
+    setSearchValue(value);
+
+    const filtered = todoList.filter((item) => {
+      return item.title.toLowerCase().includes(value.toLowerCase());
+    });
+    setFilteredItems(filtered);
+  };
 
   const refreshList = () => {
     axios
@@ -103,9 +119,8 @@ const App: React.FC = () => {
   };
 
   const renderItems = () => {
-    const newItems = todoList.filter(
-      (item) => item.completed === viewCompleted
-    );
+    const items = searchValue.length > 0 ? filteredItems : todoList;
+    const newItems = items.filter((item) => item.completed === viewCompleted);
 
     return newItems.map((item) => (
       <li
@@ -155,6 +170,7 @@ const App: React.FC = () => {
     <>
       <main className="container">
         <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
+
         <div className="row">
           <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
@@ -162,6 +178,23 @@ const App: React.FC = () => {
                 <button className="btn btn-primary" onClick={createItem}>
                   Add task
                 </button>
+                <div className="dx-fieldset">
+                  <div className="dx-field">
+                    <div className="dx-field-label">Search:</div>
+                    <div className="dx-field-value">
+                      <TextBox
+                        value={searchValue}
+                        onValueChanged={handleSearch}
+                      />
+                    </div>
+                  </div>
+                  <div className="dx-field">
+                    <div className="dx-field-value">
+                      <Button text="Clear" onClick={() => setSearchValue("")} />
+                    </div>
+                  </div>
+                </div>
+                <List dataSource={filteredItems} />
               </div>
               {renderTabList()}
               <ul className="list-group list-group-flush border-top-0">
