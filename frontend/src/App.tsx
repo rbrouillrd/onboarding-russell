@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Modal from "./components/Modal";
 import axios from "axios";
+import "devextreme/dist/css/dx.light.css";
 
 interface TodoItem {
   id?: number;
   title: string;
   description: string;
   completed: boolean;
+  priority: string;
+  due_date: string;
 }
 
 const App: React.FC = () => {
@@ -17,6 +20,8 @@ const App: React.FC = () => {
     title: "",
     description: "",
     completed: false,
+    priority: "",
+    due_date: "",
   });
 
   useEffect(() => {
@@ -55,7 +60,13 @@ const App: React.FC = () => {
   };
 
   const createItem = () => {
-    const item: TodoItem = { title: "", description: "", completed: false };
+    const item: TodoItem = {
+      title: "",
+      description: "",
+      completed: false,
+      priority: "",
+      due_date: "",
+    };
 
     setActiveItem(item);
     toggle();
@@ -72,20 +83,22 @@ const App: React.FC = () => {
 
   const renderTabList = () => {
     return (
-      <div className="nav nav-tabs">
-        <span
-          onClick={() => displayCompleted(true)}
-          className={viewCompleted ? "nav-link active" : "nav-link"}
-        >
-          Complete
-        </span>
-        <span
-          onClick={() => displayCompleted(false)}
-          className={viewCompleted ? "nav-link" : "nav-link active"}
-        >
-          Incomplete
-        </span>
-      </div>
+      <>
+        <div className="nav nav-tabs">
+          <span
+            onClick={() => displayCompleted(true)}
+            className={viewCompleted ? "nav-link active" : "nav-link"}
+          >
+            Complete
+          </span>
+          <span
+            onClick={() => displayCompleted(false)}
+            className={viewCompleted ? "nav-link" : "nav-link active"}
+          >
+            Incomplete
+          </span>
+        </div>
+      </>
     );
   };
 
@@ -101,9 +114,27 @@ const App: React.FC = () => {
       >
         <span
           className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
-          title={item.description}
+          title={item.title}
         >
           {item.title}
+        </span>
+        <span
+          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
+          title={item.description}
+        >
+          {item.description}
+        </span>
+        <span
+          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
+          title={item.priority}
+        >
+          {item.priority}
+        </span>
+        <span
+          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
+          title={item.due_date}
+        >
+          {item.due_date}
         </span>
         <span>
           <button
@@ -121,27 +152,33 @@ const App: React.FC = () => {
   };
 
   return (
-    <main className="container">
-      <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
-      <div className="row">
-        <div className="col-md-6 col-sm-10 mx-auto p-0">
-          <div className="card p-3">
-            <div className="mb-4">
-              <button className="btn btn-primary" onClick={createItem}>
-                Add task
-              </button>
+    <>
+      <main className="container">
+        <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
+        <div className="row">
+          <div className="col-md-6 col-sm-10 mx-auto p-0">
+            <div className="card p-3">
+              <div className="mb-4">
+                <button className="btn btn-primary" onClick={createItem}>
+                  Add task
+                </button>
+              </div>
+              {renderTabList()}
+              <ul className="list-group list-group-flush border-top-0">
+                {renderItems()}
+              </ul>
             </div>
-            {renderTabList()}
-            <ul className="list-group list-group-flush border-top-0">
-              {renderItems()}
-            </ul>
           </div>
         </div>
-      </div>
-      {modal ? (
-        <Modal activeItem={activeItem} toggle={toggle} onSave={handleSubmit} />
-      ) : null}
-    </main>
+        {modal ? (
+          <Modal
+            activeItem={activeItem}
+            toggle={toggle}
+            onSave={handleSubmit}
+          />
+        ) : null}
+      </main>
+    </>
   );
 };
 

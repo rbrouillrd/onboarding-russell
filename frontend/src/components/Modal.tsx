@@ -15,6 +15,8 @@ interface Todo {
   title: string;
   description: string;
   completed: boolean;
+  priority: string;
+  due_date: string;
 }
 
 interface CustomModalProps {
@@ -65,6 +67,28 @@ const CustomModal: React.FC<CustomModalProps> = ({
               value={item.description}
               onChange={handleChange}
               placeholder="Enter Todo description"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="todo-description">Priority</Label>
+            <Input
+              type="text"
+              id="todo-priority"
+              name="priority"
+              value={item.priority}
+              onChange={handleChange}
+              placeholder="Enter priority"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="due-date">Due Date</Label>
+            <Input
+              type="date"
+              id="todo-due-date"
+              name="due_date"
+              value={item.due_date}
+              onChange={handleChange}
+              // placeholder="mm/dd/yyyy"
             />
           </FormGroup>
           <FormGroup check>
