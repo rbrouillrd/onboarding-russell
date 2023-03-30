@@ -6,14 +6,10 @@ import { TextBox } from "devextreme-react/text-box";
 import { Button } from "devextreme-react/button";
 import { List } from "devextreme-react/list";
 
-interface TodoItem {
-  id?: number;
-  title: string;
-  description: string;
-  completed: boolean;
-  priority: string;
-  due_date: string;
-}
+import { TodoItem } from "./types";
+import SearchBox from "./components/SearchBox";
+import TabList from "./components/TabList";
+import TaskList from "./components/TaskList";
 
 const App: React.FC = () => {
   const [viewCompleted, setViewCompleted] = useState(false);
@@ -38,7 +34,6 @@ const App: React.FC = () => {
 
     setSearchValue(value);
 
- 
     axios
       .get(`http://localhost:8000/api/todos/?search=${value}`)
       .then((res) => setTodoList(res.data))
@@ -98,82 +93,10 @@ const App: React.FC = () => {
     setViewCompleted(status);
   };
 
-  const renderTabList = () => {
-    return (
-      <>
-        <div className="nav nav-tabs">
-          <span
-            onClick={() => displayCompleted(true)}
-            className={viewCompleted ? "nav-link active" : "nav-link"}
-          >
-            Complete
-          </span>
-          <span
-            onClick={() => displayCompleted(false)}
-            className={viewCompleted ? "nav-link" : "nav-link active"}
-          >
-            Incomplete
-          </span>
-        </div>
-      </>
-    );
-  };
-
-  const renderItems = () => {
-    console.log("renderItems", todoList);
-    const newItems = todoList.filter(
-      (item) => item.completed === viewCompleted
-    );
-
-    return newItems.map((item) => (
-      <li
-        key={item.id}
-        className="list-group-item d-flex justify-content-between align-items-center"
-      >
-        <span
-          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
-          title={item.title}
-        >
-          {item.title}
-        </span>
-        <span
-          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
-          title={item.description}
-        >
-          {item.description}
-        </span>
-        <span
-          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
-          title={item.priority}
-        >
-          {item.priority}
-        </span>
-        <span
-          className={`todo-title mr-2 ${viewCompleted ? "completed-todo" : ""}`}
-          title={item.due_date}
-        >
-          {item.due_date}
-        </span>
-        <span>
-          <button
-            className="btn btn-secondary mr-2"
-            onClick={() => editItem(item)}
-          >
-            Edit
-          </button>
-          <button className="btn btn-danger" onClick={() => handleDelete(item)}>
-            Delete
-          </button>
-        </span>
-      </li>
-    ));
-  };
-
   return (
     <>
       <main className="container">
         <h1 className="text-white text-uppercase text-center my-4">Todo app</h1>
-
         <div className="row">
           <div className="col-md-6 col-sm-10 mx-auto p-0">
             <div className="card p-3">
@@ -185,9 +108,9 @@ const App: React.FC = () => {
                   <div className="dx-field">
                     <div className="dx-field-label">Search:</div>
                     <div className="dx-field-value">
-                      <TextBox
-                        value={searchValue}
-                        onValueChanged={handleSearch}
+                      <SearchBox
+                        searchValue={searchValue}
+                        handleSearch={handleSearch}
                       />
                     </div>
                   </div>
@@ -197,11 +120,16 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                {/* <List dataSource={filteredItems} /> */}
-                {renderTabList()}
-                <ul className="list-group list-group-flush border-top-0">
-                  {renderItems()}
-                </ul>
+                <TabList
+                  viewCompleted={viewCompleted}
+                  displayCompleted={displayCompleted}
+                />
+                <TaskList
+                  todoList={todoList}
+                  viewCompleted={viewCompleted}
+                  editItem={editItem}
+                  handleDelete={handleDelete}
+                />
               </div>
             </div>
           </div>
