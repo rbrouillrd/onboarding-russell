@@ -1,6 +1,7 @@
 import React from "react";
 import { TodoItem } from "../types";
 
+
 interface TaskItemProps {
   item: TodoItem;
   viewCompleted: boolean;

@@ -1,6 +1,7 @@
 import React from "react";
-import TaskItem from "./TaskItem";
 import { TodoItem } from "../types";
+import TaskItem from "./TaskItem";
+
 
 interface TaskListProps {
   todoList: TodoItem[];

@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "./components/Modal";
 import axios from "axios";
 import "devextreme/dist/css/dx.light.css";
-import { TextBox } from "devextreme-react/text-box";
 import { Button } from "devextreme-react/button";
-import { List } from "devextreme-react/list";
-
 import { TodoItem } from "./types";
 import SearchBox from "./components/SearchBox";
 import TabList from "./components/TabList";
@@ -24,6 +21,8 @@ const App: React.FC = () => {
   });
 
   const [searchValue, setSearchValue] = useState("");
+  const [sortValue, setSortValue] = useState("title");
+  const [sortOrder, setSortOrder] = useState<boolean>(false);
 
   useEffect(() => {
     refreshList();
@@ -34,8 +33,10 @@ const App: React.FC = () => {
 
     setSearchValue(value);
 
+    const sort_by = sortOrder ? sortValue : -sortValue
+
     axios
-      .get(`http://localhost:8000/api/todos/?search=${value}`)
+      .get(`http://localhost:8000/api/todos/?search=${value}&sort_by=${sortValue}`)
       .then((res) => setTodoList(res.data))
       .catch((err) => console.log(err));
   };
@@ -93,6 +94,20 @@ const App: React.FC = () => {
     setViewCompleted(status);
   };
 
+  const handleSort = (e: any) => {
+    const value = e.value;
+
+    console.log(e)
+
+    setSortValue(value);
+  };
+
+  const handleSortOrder = () => {
+  
+    console.log(!sortOrder);
+    setSortOrder(!sortOrder);
+  };
+
   return (
     <>
       <main className="container">
@@ -111,6 +126,10 @@ const App: React.FC = () => {
                       <SearchBox
                         searchValue={searchValue}
                         handleSearch={handleSearch}
+                        sortValue={sortValue}
+                        handleSort={handleSort}
+                        sortOrder={sortOrder}
+                        handleSortOrder={handleSortOrder}
                       />
                     </div>
                   </div>
